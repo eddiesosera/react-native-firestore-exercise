@@ -1,59 +1,73 @@
 import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity, Switch } from 'react-native'
 import React, { useState } from 'react'
+import { createNewBucketItem } from '../services/DbService'
+import { useNavigation } from '@react-navigation/native'
 
-const CreateScreen = ({navigation}) => {
-
+const CreateScreen = () => {
 
     const [title, setTitle] = useState('')
     const [priority, setPriority] = useState(false)
     const [due, setDue] = useState('')
     const [description, setDescription] = useState('')
+    const navigate = useNavigation()
 
-  return (
-    <SafeAreaView >
-        <View style={styles.container}>
+    const handleCreation = async () => {
+        var items = { title, priority, due, description, isCompleted: false }
+        var success = await createNewBucketItem(items);
 
-            <TextInput
-                style={styles.inputField}
-                placeholder="Bucket List Title"
-                onChangeText={newText => setTitle(newText)}
-                defaultValue={title}
-            />
+        if (success) {
+            navigate.goBack() //if it wass successful, go back home
+        } else {
+            // TODO: Validation on why
 
-            <TextInput
-                style={styles.inputField}
-                placeholder="When do you want it done?"
-                onChangeText={newText => setDue(newText)}
-                defaultValue={due}
-            />      
+        }
+    }
 
-            <TextInput
-                multiline
-                numberOfLines={4}
-                style={styles.inputField}
-                placeholder="Description of bucket list"
-                onChangeText={newText => setDescription(newText)}
-                defaultValue={description}  
-            />
+    return (
+        <SafeAreaView >
+            <View style={styles.container}>
 
-            <View style={styles.switch}>
-                <Switch
-                    trackColor={{false: 'black', true: 'green'}}
-                    thumbColor={priority ? 'yellow' : 'white'}
-                    ios_backgroundColor="#3e3e3e"
-                    onValueChange={(toggle) => setPriority(toggle)}
-                    value={priority}
+                <TextInput
+                    style={styles.inputField}
+                    placeholder="Bucket List Title"
+                    onChangeText={newText => setTitle(newText)}
+                    defaultValue={title}
                 />
-                <Text>Priority?</Text>
-            </View>
 
-            <TouchableOpacity style={styles.button} >
-                <Text style={styles.buttonText}>Create Bucket List Item</Text>
-            </TouchableOpacity>
-        
-        </View>  
-    </SafeAreaView>
-  )
+                <TextInput
+                    style={styles.inputField}
+                    placeholder="When do you want it done?"
+                    onChangeText={newText => setDue(newText)}
+                    defaultValue={due}
+                />
+
+                <TextInput
+                    multiline
+                    numberOfLines={4}
+                    style={styles.inputField}
+                    placeholder="Description of bucket list"
+                    onChangeText={newText => setDescription(newText)}
+                    defaultValue={description}
+                />
+
+                <View style={styles.switch}>
+                    <Switch
+                        trackColor={{ false: 'black', true: 'green' }}
+                        thumbColor={priority ? 'yellow' : 'white'}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={(toggle) => setPriority(toggle)}
+                        value={priority}
+                    />
+                    <Text>Priority?</Text>
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={handleCreation}>
+                    <Text style={styles.buttonText}>Create Bucket List Item</Text>
+                </TouchableOpacity>
+
+            </View>
+        </SafeAreaView>
+    )
 }
 
 export default CreateScreen
@@ -80,7 +94,7 @@ const styles = StyleSheet.create({
     },
     switch: {
         marginTop: 15,
-        display: 'flex',    
+        display: 'flex',
         flexDirection: 'row-reverse',
         alignItems: 'center',
         gap: 10,
